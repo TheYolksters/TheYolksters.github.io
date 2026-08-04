@@ -44,7 +44,7 @@ export const site = {
       role: "The Heart & Muscle",
       blurb:
         "Dia brings the funny, positive vibes that keep morale high no matter the score. But don't let the jokes fool you — when the pressure is on, she's the powerhouse who locks the map down.",
-      twitch: "",
+      twitch: "darling_dia/",
       youtube: "",
     },
     {
@@ -53,7 +53,7 @@ export const site = {
       role: "The Architect",
       blurb:
         "The technical engine of the coop. Grai thrives on analyzing the meta, crunching the data, and fine-tuning the team's approach — the exact technical foundation the flock needs to execute.",
-      twitch: "",
+      twitch: "thegrai/",
       youtube: "",
     },
     {
