@@ -41,9 +41,9 @@ export const site = {
     {
       id: "dia",
       name: "DarlingDia",
-      role: "The Heart & Muscle",
+      role: "The High-Vibe Anchor",
       blurb:
-        "Dia brings the funny, positive vibes that keep morale high no matter the score. But don't let the jokes fool you — when the pressure is on, she's the powerhouse who locks the map down.",
+        "Dia is the life of the squad, bringing infectious humor and positive vibes that keep team morale sky-high no matter the score. But don't let the jokes fool you—when the pressure peaks and the Cashout timer is ticking down, she becomes an absolute game-changer. Dia is an unstoppable clutch machine who single-handedly turns chaotic firefights around, locks down the objective completely, and serves as the dominant backbone of the entire roster.",
       twitch: "darling_dia/",
       youtube: "",
     },
