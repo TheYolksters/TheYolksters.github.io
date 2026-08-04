@@ -61,7 +61,7 @@ export const site = {
       name: "KoalaKyle",
       role: "The Wildcard",
       blurb:
-        "The newest recruit, and unpredictability is his greatest weapon. Always in good spirits and permanently ready to hit the W-key, his relentless energy keeps the enemy guessing.",
+        "As the squad's resident chaos engine, Kyle’s sheer unpredictability is his greatest weapon. Always in high spirits and permanently ready to hit the W-key and push, his relentless energy keeps the enemy guessing, disrupts their setups, and keeps our momentum rolling.",
       twitch: "",
       youtube: "",
     },
