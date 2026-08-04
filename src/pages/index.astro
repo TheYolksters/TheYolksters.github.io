@@ -1,0 +1,116 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import { site } from "@/config/site";
+import { buttonVariants } from "@/components/ui/button";
+import { badgeVariants } from "@/components/ui/badge";
+import hero from "@/assets/hero.png";
+import avatarGrai from "@/assets/avatar-grai.png";
+import avatarDia from "@/assets/avatar-dia.png";
+import avatarKyle from "@/assets/avatar-kyle.png";
+
+const avatars = { grai: avatarGrai, dia: avatarDia, kyle: avatarKyle } as const;
+---
+
+<Layout>
+  <!-- Hero -->
+  <section class="starfield relative overflow-hidden">
+    <div
+      class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:py-24"
+    >
+      <div>
+        <span class={badgeVariants({ variant: "glow" })}>
+          Family-friendly esports
+        </span>
+        <h1
+          class="mt-4 text-4xl font-extrabold leading-tight tracking-tight md:text-6xl"
+        >
+          Welcome to the <span class="text-yolk">Coop</span>
+        </h1>
+        <p class="mt-4 max-w-prose text-lg text-dust">
+          We're <strong class="text-star">{site.name}</strong>{" "}
+          <span class="text-yolk">{site.tag}</span> — high-tier gameplay, undeniable
+          chemistry, and just enough chaos to keep our opponents scrambling.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/roster/" class={buttonVariants({ size: "lg" })}>
+            Meet the Roster
+          </a>
+          <a
+            href="/about/"
+            class={buttonVariants({ variant: "outline", size: "lg" })}
+          >
+            Our Story
+          </a>
+        </div>
+      </div>
+
+      <Image
+        src={hero}
+        alt="The Yolksters crest — a chick in a space helmet soaring past planets"
+        class="w-full rounded-2xl border border-nebula-edge/60 shadow-[0_20px_80px_-30px_var(--brand-nova)]"
+        loading="eager"
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 768px) 50vw, 100vw"
+      />
+    </div>
+  </section>
+
+  <!-- The Flock -->
+  <section class="border-t border-nebula-edge/40 bg-nebula/20">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-3xl font-extrabold md:text-4xl">The Flock</h2>
+          <p class="mt-2 text-dust">
+            Technical precision, raw firepower, unpredictable energy.
+          </p>
+        </div>
+        <a
+          href="/roster/"
+          class="hidden text-sm font-semibold text-glow hover:underline sm:block"
+        >
+          Full roster →
+        </a>
+      </div>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-3">
+        {
+          site.members.map((m) => (
+            <a
+              href="/roster/"
+              class="group rounded-2xl border border-nebula-edge bg-card p-5 text-center transition-all hover:-translate-y-1 hover:border-yolk/60"
+            >
+              <Image
+                src={avatars[m.id]}
+                alt=""
+                width={320}
+                height={320}
+                class="mx-auto size-28 rounded-full border-2 border-nebula-edge object-cover transition-colors group-hover:border-yolk"
+              />
+              <h3 class="mt-4 text-xl font-bold">{m.name}</h3>
+              <p class="mt-1 text-sm font-semibold uppercase tracking-wider text-glow">
+                {m.role}
+              </p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Vision strip -->
+  <section class="starfield border-t border-nebula-edge/40">
+    <div class="mx-auto max-w-4xl px-4 py-16 text-center">
+      <p class="font-display text-2xl font-bold leading-snug md:text-3xl">
+        “A journey <span class="text-yolk">eggs-traordinary</span> — connecting
+        with the community, exploring new worlds,{" "}
+        <span class="text-glow">a flock united in adventure</span>.”
+      </p>
+      <p class="mt-6 text-dust">
+        We aren't just here to play — we're here to{" "}
+        <strong class="text-star">rule the roost</strong>.
+      </p>
+    </div>
+  </section>
+</Layout>

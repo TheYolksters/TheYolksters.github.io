@@ -53,6 +53,7 @@ Gotchas already scouted so we don't trip on them:
 - **Don't** use `@astrojs/tailwind` (deprecated, Tailwind v3 only) — old tutorials will suggest it.
 - **Don't** add the `@astrojs/netlify` adapter — the site is fully static. Adding it would silently move image optimization from build-time to Netlify's Image CDN.
 - shadcn needs `"@/*": ["./src/*"]` path aliases in `tsconfig.json` (Astro doesn't add these by default).
+- Astro 7's compiler drops whitespace-only text nodes containing a newline: when text and an inline tag are split across lines, the space between them vanishes ("We areThe Yolksters"). Keep the space on the same line as the tag, or use an explicit `{" "}`. (Hit this for real during Phase 1.)
 - shadcn components in Astro are React islands — interactive ones need `client:load`/`client:visible`.
 
 ---

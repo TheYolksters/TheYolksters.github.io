@@ -1,0 +1,35 @@
+/* ============================================================
+   THE YOLKSTERS — BRAND THEME  (the website's paint bucket)
+   ============================================================
+   Change a value here, save, and the WHOLE site retints:
+   buttons, cards, links, borders, glows — everything.
+
+   Tip: open /theme in your browser for a live playground.
+   Experiment with the color pickers there, then hit
+   "Copy CSS" and paste the result over this :root block.
+
+   Colors extracted from the crest art: yolk gold + shield-glow
+   cyan over a deep-space navy, with a hint of nebula purple.
+   ============================================================ */
+
+:root {
+  /* ---- Core brand ------------------------------------------------ */
+  --brand-yolk:        #ffc53d; /* PRIMARY — yolk gold (buttons, highlights)  */
+  --brand-yolk-bright: #ffd76a; /* lighter gold (hovers, glows)               */
+  --brand-yolk-deep:   #c8860d; /* deeper gold (gradients, emphasis)          */
+  --brand-sky:         #4cc9f0; /* SECONDARY — shield-glow cyan (links)       */
+  --brand-nova:        #8b5cf6; /* nebula purple (subtle background wisps)    */
+
+  /* ---- Space backdrop -------------------------------------------- */
+  --brand-cosmos:      #0b0f23; /* page background — deep space navy          */
+  --brand-nebula:      #161c3d; /* cards & panels                             */
+  --brand-nebula-edge: #2a3158; /* borders & dividers                         */
+
+  /* ---- Text ------------------------------------------------------- */
+  --brand-star:        #f2f5ff; /* main text — starlight                      */
+  --brand-dust:        #9ba5c9; /* muted text — space dust                    */
+
+  /* ---- Special ---------------------------------------------------- */
+  --brand-live:        #c62828; /* "LIVE" red — reserved for stream badges
+                                   (dark enough for white text, WCAG AA)      */
+}

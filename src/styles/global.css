@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/baloo-2";
+
+/* Brand colors live in ONE editable file — see src/styles/theme.css */
+@import "./theme.css";
+
+/*
+ * Map the brand palette onto Tailwind v4 / shadcn-style design tokens.
+ * `inline` keeps utilities pointing at the raw --brand-* variables, so
+ * live edits on :root (the /theme playground) restyle the page instantly.
+ */
+@theme inline {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Baloo 2 Variable", "Inter Variable", ui-rounded, system-ui,
+    sans-serif;
+
+  /* semantic tokens (used by shadcn-style components) */
+  --color-background: var(--brand-cosmos);
+  --color-foreground: var(--brand-star);
+  --color-card: var(--brand-nebula);
+  --color-card-foreground: var(--brand-star);
+  --color-popover: var(--brand-nebula);
+  --color-popover-foreground: var(--brand-star);
+  --color-primary: var(--brand-yolk);
+  --color-primary-foreground: #241a03;
+  --color-secondary: var(--brand-sky);
+  --color-secondary-foreground: #062633;
+  --color-muted: var(--brand-nebula);
+  --color-muted-foreground: var(--brand-dust);
+  --color-accent: var(--brand-sky);
+  --color-accent-foreground: #062633;
+  --color-destructive: var(--brand-live);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--brand-nebula-edge);
+  --color-input: var(--brand-nebula-edge);
+  --color-ring: var(--brand-yolk);
+
+  /* raw brand palette (bg-yolk, text-glow, border-nebula-edge, …) */
+  --color-yolk: var(--brand-yolk);
+  --color-yolk-bright: var(--brand-yolk-bright);
+  --color-yolk-deep: var(--brand-yolk-deep);
+  --color-glow: var(--brand-sky);
+  --color-nova: var(--brand-nova);
+  --color-cosmos: var(--brand-cosmos);
+  --color-nebula: var(--brand-nebula);
+  --color-nebula-edge: var(--brand-nebula-edge);
+  --color-star: var(--brand-star);
+  --color-dust: var(--brand-dust);
+  --color-live: var(--brand-live);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100dvh;
+    /* faint nebula wisps over the deep-space backdrop */
+    background-image:
+      radial-gradient(
+        1100px 550px at 85% -10%,
+        color-mix(in oklab, var(--brand-nova) 16%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        900px 500px at -15% 25%,
+        color-mix(in oklab, var(--brand-sky) 9%, transparent),
+        transparent 55%
+      );
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+
+  ::selection {
+    background-color: var(--brand-yolk);
+    color: #241a03;
+  }
+}
+
+/* a sprinkle of stars for hero sections */
+@utility starfield {
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 22%, rgb(255 255 255 / 0.55), transparent 100%),
+    radial-gradient(1px 1px at 28% 68%, rgb(255 255 255 / 0.35), transparent 100%),
+    radial-gradient(2px 2px at 44% 12%, rgb(255 255 255 / 0.45), transparent 100%),
+    radial-gradient(1px 1px at 58% 82%, rgb(255 255 255 / 0.3), transparent 100%),
+    radial-gradient(1.5px 1.5px at 72% 34%, rgb(255 255 255 / 0.5), transparent 100%),
+    radial-gradient(1px 1px at 86% 62%, rgb(255 255 255 / 0.35), transparent 100%),
+    radial-gradient(1.5px 1.5px at 94% 18%, rgb(255 255 255 / 0.4), transparent 100%);
+}

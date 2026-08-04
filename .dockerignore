@@ -1,0 +1,9 @@
+node_modules
+dist
+.astro
+.git
+.netlify
+.devcontainer
+npm-debug.log*
+*.md
+!README.md

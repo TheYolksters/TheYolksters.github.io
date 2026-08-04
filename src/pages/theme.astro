@@ -1,0 +1,24 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ThemePlayground from "@/components/ThemePlayground.tsx";
+---
+
+<Layout
+  title="Theme Playground"
+  description="Live brand-color playground for The Yolksters website."
+>
+  <section class="mx-auto max-w-6xl px-4 py-12 md:py-16">
+    <h1 class="text-4xl font-extrabold md:text-5xl">
+      Theme <span class="text-yolk">Playground</span>
+    </h1>
+    <p class="mt-3 max-w-prose text-lg text-dust">
+      The website's settings room. Changes here are a live preview only — they
+      reset on reload. To make them permanent, copy the CSS and paste it into{" "}
+      <code class="text-glow">src/styles/theme.css</code>.
+    </p>
+
+    <div class="mt-10">
+      <ThemePlayground client:load />
+    </div>
+  </section>
+</Layout>

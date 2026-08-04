@@ -1,0 +1,31 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import { buttonVariants } from "@/components/ui/button";
+import logo from "@/assets/logo.png";
+---
+
+<Layout title="Page not found">
+  <section class="starfield">
+    <div
+      class="mx-auto flex max-w-2xl flex-col items-center px-4 py-24 text-center"
+    >
+      <Image
+        src={logo}
+        alt=""
+        width={256}
+        height={256}
+        class="size-32 rounded-full border border-nebula-edge"
+      />
+      <h1 class="mt-8 text-5xl font-extrabold">
+        4<span class="text-yolk">0</span>4
+      </h1>
+      <p class="mt-4 text-lg text-dust">
+        This egg rolled right off the map. Whatever was here has flown the coop.
+      </p>
+      <a href="/" class:list={["mt-8", buttonVariants({ size: "lg" })]}>
+        Back to the Coop
+      </a>
+    </div>
+  </section>
+</Layout>

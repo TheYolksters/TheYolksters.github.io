@@ -1,0 +1,51 @@
+---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo.png";
+import { site } from "@/config/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-nebula-edge/60 bg-nebula/40">
+  <div
+    class="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 text-center"
+  >
+    <Image
+      src={logo}
+      alt={`${site.name} crest`}
+      width={96}
+      height={96}
+      class="size-12 rounded-full ring-1 ring-nebula-edge"
+    />
+    <p class="font-display text-lg font-bold">
+      {site.name} <span class="text-yolk">{site.tag}</span>
+    </p>
+    <p class="max-w-md text-sm text-dust">
+      {site.tagline} Family-friendly esports — gamers of all ages welcome in the
+      flock.
+    </p>
+
+    {
+      site.socials.length > 0 && (
+        <ul class="flex flex-wrap justify-center gap-x-5 gap-y-2">
+          {site.socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-semibold text-glow hover:underline"
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <p class="text-xs text-dust">
+      © {year} {site.name}. All eggs reserved.
+    </p>
+  </div>
+</footer>

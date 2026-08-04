@@ -1,0 +1,35 @@
+services:
+  # Dev server with hot reload → http://localhost:4321 (theme playground at /theme)
+  #   docker compose up
+  # After changing package.json:
+  #   docker compose down -v && docker compose up --build
+  web:
+    build:
+      context: .
+      target: dev
+    init: true
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      # Named volume keeps Linux-built node_modules out of the Windows
+      # bind mount (native binaries differ per OS).
+      - node_modules:/app/node_modules
+    environment:
+      # File-change events don't cross the Windows→container bind mount,
+      # so the dev server polls for changes instead (see astro.config.mjs).
+      - USE_POLLING=1
+
+  # Production build served locally → http://localhost:4322
+  #   docker compose --profile preview up --build preview
+  preview:
+    build:
+      context: .
+      target: preview
+    init: true
+    ports:
+      - "4322:4321"
+    profiles: ["preview"]
+
+volumes:
+  node_modules:
