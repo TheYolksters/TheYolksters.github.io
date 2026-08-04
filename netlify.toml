@@ -2,6 +2,11 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # Match the Dockerfile (node:24-slim) and local dev. Astro 7 needs
+  # >=22.12.0, so don't rely on whatever Netlify's default happens to be.
+  NODE_VERSION = "24"
+
 # Hashed, immutable build assets — cache forever. Saves repeat-visit
 # bandwidth, which is metered (20 credits/GB) on the free plan.
 [[headers]]
