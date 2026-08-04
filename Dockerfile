@@ -11,10 +11,11 @@ COPY . .
 FROM base AS dev
 ENV USE_POLLING=1
 EXPOSE 4321
-# Run astro directly (not via npm) so SIGTERM reaches it and it shuts
-# down cleanly; --force replaces a stale dev-server lock left behind if
-# a previous container was hard-killed.
-CMD ["node", "node_modules/astro/bin/astro.mjs", "dev", "--host", "0.0.0.0", "--force"]
+# Astro's dev-server lock (.astro/dev.json) lives in the bind mount and
+# survives container restarts, but its PID is meaningless in a fresh
+# container — remove it, then exec astro directly (not via npm) so
+# SIGTERM reaches it for a clean shutdown.
+CMD ["sh", "-c", "rm -f .astro/dev.json && exec node node_modules/astro/bin/astro.mjs dev --host 0.0.0.0"]
 
 # --- Production build, served locally for a final look ----------------
 FROM base AS preview
