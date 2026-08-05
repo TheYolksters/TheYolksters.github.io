@@ -1,13 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import logo from "@/assets/logo.png";
-import { site } from "@/config/site";
-
-const nav = [
-  { href: "/", label: "Home" },
-  { href: "/about/", label: "About" },
-  { href: "/roster/", label: "Roster" },
-];
+import MobileNav from "@/components/MobileNav";
+import { nav, site } from "@/config/site";
 
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
@@ -32,7 +27,8 @@ const isActive = (href: string) =>
       </span>
     </a>
 
-    <nav aria-label="Main navigation">
+    <!-- Desktop: links inline -->
+    <nav aria-label="Main navigation" class="hidden md:block">
       <ul class="flex items-center gap-1 sm:gap-2">
         {
           nav.map((item) => (
@@ -54,5 +50,19 @@ const isActive = (href: string) =>
         }
       </ul>
     </nav>
+
+    {/*
+      Mobile: collapse into a sheet menu. `client:media` means the React
+      bundle is only ever downloaded on viewports that can see the button —
+      desktop visitors pay nothing for it.
+    */}
+    <div class="md:hidden">
+      <MobileNav
+        client:media="(max-width: 767px)"
+        items={nav}
+        pathname={path}
+        label={site.name}
+      />
+    </div>
   </div>
 </header>

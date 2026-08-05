@@ -3,6 +3,12 @@ services:
   #   docker compose up
   # After changing package.json:
   #   docker compose down -v && docker compose up --build
+  #
+  # ...but if the dep was added with `npm install` on Windows, regenerate the
+  # lock file in Linux FIRST or `npm ci` fails the image build with
+  # "Missing: @emnapi/core from lock file". Host npm resolves a different tree
+  # than the image's npm and drops the cross-platform wasm optional deps:
+  #   docker run --rm -v "${PWD}:/app" -w /app node:24-slim npm i --package-lock-only
   web:
     build:
       context: .

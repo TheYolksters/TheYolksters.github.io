@@ -1,0 +1,176 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { site } from "@/config/site";
+import { buttonVariants } from "@/components/ui/button";
+import { badgeVariants } from "@/components/ui/badge";
+import { embedParents, playerUrl, channelUrl, vodsUrl } from "@/lib/twitch";
+import { getLatestVideos, type YouTubeVideo } from "@/lib/youtube";
+
+const parents = embedParents(Astro.site);
+
+const streamers = site.members.filter((m) => m.twitch);
+const upcoming = site.members.filter((m) => !m.twitch);
+
+// Build-time YouTube pull. Runs in parallel; members without a channel ID
+// resolve to [] immediately, so this is a no-op until those are filled in.
+const feeds = await Promise.all(
+  site.members.map(async (m) => ({
+    member: m,
+    videos: await getLatestVideos(m.youtubeChannelId, 3),
+  })),
+);
+
+const videos: Array<YouTubeVideo & { author: string }> = feeds
+  .flatMap(({ member, videos }) =>
+    videos.map((v) => ({ ...v, author: member.name })),
+  )
+  .sort((a, b) => b.published.getTime() - a.published.getTime())
+  .slice(0, 6);
+
+const fmtDate = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+---
+
+<Layout
+  title="Watch"
+  description="Watch The Yolksters live on Twitch and catch the latest videos from TheGrai, DarlingDia and KoalaKyle."
+>
+  <section class="starfield">
+    <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
+      <h1 class="text-4xl font-extrabold md:text-5xl">
+        <span class="text-yolk">Watch</span> the Flock
+      </h1>
+      <p class="mt-3 max-w-prose text-lg text-dust">
+        Streams go live right here — when a Yolkster is broadcasting, their
+        player below is playing. Otherwise you'll see their offline screen and
+        can dive straight into past broadcasts.
+      </p>
+
+      <!-- Live players -->
+      <div class="mt-10 grid gap-8 lg:grid-cols-2">
+        {
+          streamers.map((m, i) => (
+            <div class="flex flex-col overflow-hidden rounded-2xl border border-nebula-edge bg-card shadow-[0_8px_40px_-16px_rgb(0_0_0/0.6)]">
+              <div class="aspect-video w-full bg-cosmos">
+                <iframe
+                  src={playerUrl(m.twitch, parents)}
+                  title={`${m.name} on Twitch`}
+                  class="size-full"
+                  allowfullscreen
+                  loading={i === 0 ? "eager" : "lazy"}
+                  referrerpolicy="strict-origin"
+                />
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 p-5">
+                <div>
+                  <h2 class="font-display text-xl font-bold">{m.name}</h2>
+                  <p class="mt-1 text-sm font-semibold uppercase tracking-wider text-glow">
+                    {m.role}
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <a
+                    href={channelUrl(m.twitch)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={buttonVariants({ size: "sm" })}
+                  >
+                    Follow
+                  </a>
+                  <a
+                    href={vodsUrl(m.twitch)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={buttonVariants({ variant: "outline", size: "sm" })}
+                  >
+                    Past broadcasts
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+
+        {
+          upcoming.map((m) => (
+            <div class="flex flex-col overflow-hidden rounded-2xl border border-dashed border-nebula-edge bg-card/40">
+              <div class="flex aspect-video w-full flex-col items-center justify-center gap-3 px-6 text-center">
+                <span class={badgeVariants({ variant: "glow" })}>
+                  Still in the nest
+                </span>
+                <p class="max-w-xs text-sm text-dust">
+                  No stream on this perch yet. Give it time — every Yolkster
+                  takes flight eventually.
+                </p>
+              </div>
+              <div class="p-5">
+                <h2 class="font-display text-xl font-bold text-dust">{m.name}</h2>
+                <p class="mt-1 text-sm font-semibold uppercase tracking-wider text-dust/70">
+                  {m.role}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest videos -->
+  <section class="border-t border-nebula-edge/40 bg-nebula/20">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <h2 class="text-3xl font-extrabold md:text-4xl">Latest Videos</h2>
+
+      {
+        videos.length > 0 ? (
+          <>
+            <p class="mt-2 text-dust">
+              Freshly uploaded from the flock's YouTube channels.
+            </p>
+            <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {videos.map((v) => (
+                <a
+                  href={v.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group flex flex-col overflow-hidden rounded-2xl border border-nebula-edge bg-card transition-all hover:-translate-y-1 hover:border-yolk/60"
+                >
+                  <img
+                    src={v.thumbnail}
+                    alt=""
+                    width={480}
+                    height={360}
+                    loading="lazy"
+                    class="aspect-video w-full object-cover"
+                  />
+                  <div class="flex flex-1 flex-col gap-2 p-5">
+                    <h3 class="font-display font-bold leading-snug transition-colors group-hover:text-yolk">
+                      {v.title}
+                    </h3>
+                    <p class="mt-auto text-xs uppercase tracking-wider text-dust">
+                      {v.author} · {fmtDate.format(v.published)}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div class="mt-6 rounded-2xl border border-dashed border-nebula-edge bg-card/40 p-8">
+            <span class={badgeVariants({ variant: "glow" })}>Still hatching</span>
+            <p class="mt-4 max-w-prose text-dust">
+              Nothing's hatched here just yet. The flock has been far too busy
+              scrambling opponents to sit down and edit the footage — but the
+              moment these highlights crack open, they'll roost right here.
+              Until then, catch us live on Twitch above.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>
