@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import logo from "@/assets/logo.png";
+import wordmark from "@/assets/wordmark.png";
 import MobileNav from "@/components/MobileNav";
 import { nav, site } from "@/config/site";
 
@@ -22,8 +23,16 @@ const isActive = (href: string) =>
         class="size-10 shrink-0 rounded-full ring-1 ring-nebula-edge"
         loading="eager"
       />
-      <span class="truncate font-display text-lg font-extrabold tracking-wide">
-        {site.name} <span class="hidden text-yolk sm:inline">{site.tag}</span>
+      <Image
+        src={wordmark}
+        alt={site.name}
+        width={110}
+        densities={[1, 2, 3]}
+        class="h-9 w-auto shrink-0"
+        loading="eager"
+      />
+      <span class="hidden font-display text-lg font-extrabold tracking-wide text-yolk sm:inline">
+        {site.tag}
       </span>
     </a>
 

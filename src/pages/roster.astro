@@ -3,12 +3,12 @@ import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import { site } from "@/config/site";
 import { badgeVariants } from "@/components/ui/badge";
-import avatarGrai from "@/assets/avatar-grai.png";
-import avatarDia from "@/assets/avatar-dia.png";
-import avatarKyle from "@/assets/avatar-kyle.png";
+import memberGrai from "@/assets/member-grai.png";
+import memberDia from "@/assets/member-dia.png";
+import memberKyle from "@/assets/member-kyle.png";
 import team from "@/assets/team.png";
 
-const avatars = { grai: avatarGrai, dia: avatarDia, kyle: avatarKyle } as const;
+const portraits = { grai: memberGrai, dia: memberDia, kyle: memberKyle } as const;
 ---
 
 <Layout
@@ -30,11 +30,11 @@ const avatars = { grai: avatarGrai, dia: avatarDia, kyle: avatarKyle } as const;
           site.members.map((m) => (
             <div class="flex flex-col overflow-hidden rounded-2xl border border-nebula-edge bg-card shadow-[0_8px_40px_-16px_rgb(0_0_0/0.6)] transition-all hover:-translate-y-1 hover:border-yolk/60">
               <Image
-                src={avatars[m.id]}
-                alt=""
-                width={640}
-                height={640}
-                widths={[320, 640]}
+                src={portraits[m.id]}
+                alt={`${m.name} character art`}
+                width={1024}
+                height={1024}
+                widths={[320, 640, 1024]}
                 class="aspect-square w-full object-cover"
                 sizes="(min-width: 768px) 33vw, 100vw"
               />
