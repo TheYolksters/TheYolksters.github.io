@@ -40,7 +40,7 @@ npm run preview              # serve dist/ locally
 | Change brand colors | [src/styles/theme.css](src/styles/theme.css) — or play at `/theme` first, then Copy CSS |
 | Change names, blurbs, socials, channels | [src/config/site.ts](src/config/site.ts) |
 | Change page copy | [src/pages/](src/pages/) |
-| Swap art | Drop new PNGs in [Images/TheYolksters/](Images/TheYolksters/), run `node scripts/prep-images.mjs` |
+| Swap art | Hero/banner/crest PNGs go in [Images/TheYolksters/](Images/TheYolksters/); `-clean` character art + wordmark go at [Images/](Images/) root (filenames are hard-coded in [scripts/prep-images.mjs](scripts/prep-images.mjs) — update them there). Then run `node scripts/prep-images.mjs` |
 
 Images are optimized automatically at build time (WebP, responsive sizes) —
 commit the PNGs, Astro does the rest.

@@ -4,11 +4,16 @@ import Layout from "@/layouts/Layout.astro";
 import { site } from "@/config/site";
 import { badgeVariants } from "@/components/ui/badge";
 import memberGrai from "@/assets/member-grai.png";
+import memberGraiAlt from "@/assets/member-grai-alt.png";
 import memberDia from "@/assets/member-dia.png";
+import memberDiaAlt from "@/assets/member-dia-alt.png";
 import memberKyle from "@/assets/member-kyle.png";
+import memberKyleAlt from "@/assets/member-kyle-alt.png";
 import team from "@/assets/team.png";
 
 const portraits = { grai: memberGrai, dia: memberDia, kyle: memberKyle } as const;
+// action-variant art crossfaded in on card hover
+const altPortraits = { grai: memberGraiAlt, dia: memberDiaAlt, kyle: memberKyleAlt } as const;
 ---
 
 <Layout
@@ -28,16 +33,30 @@ const portraits = { grai: memberGrai, dia: memberDia, kyle: memberKyle } as cons
       <div class="mt-10 grid gap-6 md:grid-cols-3">
         {
           site.members.map((m) => (
-            <div class="flex flex-col overflow-hidden rounded-2xl border border-nebula-edge bg-card shadow-[0_8px_40px_-16px_rgb(0_0_0/0.6)] transition-all hover:-translate-y-1 hover:border-yolk/60">
-              <Image
-                src={portraits[m.id]}
-                alt={`${m.name} character art`}
-                width={1024}
-                height={1024}
-                widths={[320, 640, 1024]}
-                class="aspect-square w-full object-cover"
-                sizes="(min-width: 768px) 33vw, 100vw"
-              />
+            <div class="group flex flex-col overflow-hidden rounded-2xl border border-nebula-edge bg-card shadow-[0_8px_40px_-16px_rgb(0_0_0/0.6)] transition-all hover:-translate-y-1 hover:border-yolk/60">
+              <div class="relative">
+                <Image
+                  src={portraits[m.id]}
+                  alt={`${m.name} character art`}
+                  width={1024}
+                  height={1024}
+                  widths={[320, 640, 1024]}
+                  class="aspect-square w-full object-cover"
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                />
+                {altPortraits[m.id] && (
+                  <Image
+                    src={altPortraits[m.id]}
+                    alt=""
+                    aria-hidden="true"
+                    width={1024}
+                    height={1024}
+                    widths={[320, 640, 1024]}
+                    class="absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none"
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                  />
+                )}
+              </div>
               <div class="flex flex-1 flex-col gap-3 p-6">
                 <div class="flex flex-col items-start gap-2">
                   <h2 class="font-display text-2xl font-bold">{m.name}</h2>

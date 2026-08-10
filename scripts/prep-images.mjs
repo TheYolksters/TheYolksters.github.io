@@ -3,7 +3,7 @@
  * anything in Images/. Produces:
  *   src/assets/  hero, team, banner, about-banner, logo, wordmark
  *                + member avatars (face crops) and full-body member art
- *   public/      favicon.png, apple-touch-icon.png, og.png
+ *   public/      favicon.png, apple-touch-icon.png, og.jpg
  *
  * Crop boxes are fractions of source width/height, so the script keeps
  * working if the art is re-exported at a different resolution.
@@ -68,12 +68,15 @@ async function makeMemberScene(srcPath, outFile) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   const { width: w, height: h } = info;
-  // "backdrop-ish": light and unsaturated — white bg + soft gray ground shadow
+  // "backdrop-ish": light and near-neutral — white bg + the soft ground
+  // shadow, which ranges from cool gray to warm taupe (Grai's casual art
+  // hits channel spread ~59). Interiors stay safe at this tolerance: the
+  // flood can't cross the art's dark silhouette outlines.
   const isBg = (p) => {
     const i = p * 4;
     const mn = Math.min(data[i], data[i + 1], data[i + 2]);
     const mx = Math.max(data[i], data[i + 1], data[i + 2]);
-    return mn > 150 && mx - mn < 48;
+    return mn > 150 && mx - mn < 64;
   };
   const bg = new Uint8Array(w * h);
   const stack = [];
@@ -100,6 +103,52 @@ async function makeMemberScene(srcPath, outFile) {
     if (x < w - 1) seed(x + 1, y);
     if (y > 0) seed(x, y - 1);
     if (y < h - 1) seed(x, y + 1);
+  }
+  // Backdrop pockets fully enclosed by the art (the loop of Grai's backpack
+  // cable) never connect to the border flood. Reclaim an enclosed near-white
+  // region only when it matches the backdrop almost exactly — character
+  // whites (eye glints, sneakers, sweater cables) all carry shading that
+  // fails the mean/std test, and the area gate spares tiny highlights.
+  let sr0 = 0, sg0 = 0, sb0 = 0, n0 = 0;
+  for (let p = 0; p < w * h; p++) {
+    if (!bg[p]) continue;
+    const i = p * 4;
+    sr0 += data[i]; sg0 += data[i + 1]; sb0 += data[i + 2]; n0++;
+  }
+  const bgMean = [sr0 / n0, sg0 / n0, sb0 / n0];
+  const minPocket = 0.0015 * w * h;
+  const seen = new Uint8Array(w * h);
+  for (let p0 = 0; p0 < w * h; p0++) {
+    if (bg[p0] || seen[p0] || !isBg(p0)) continue;
+    const px = [p0];
+    seen[p0] = 1;
+    let sr = 0, sg = 0, sb = 0, sq = 0;
+    for (let k = 0; k < px.length; k++) {
+      const p = px[k];
+      const i = p * 4;
+      sr += data[i]; sg += data[i + 1]; sb += data[i + 2];
+      const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      sq += lum * lum;
+      const x = p % w;
+      const y = (p - x) / w;
+      for (const q of [x > 0 && p - 1, x < w - 1 && p + 1, y > 0 && p - w, y < h - 1 && p + w]) {
+        if (q !== false && !bg[q] && !seen[q] && isBg(q)) {
+          seen[q] = 1;
+          px.push(q);
+        }
+      }
+    }
+    const n = px.length;
+    const mean = (sr + sg + sb) / (3 * n);
+    const std = Math.sqrt(Math.max(0, sq / n - mean * mean));
+    if (
+      n >= minPocket && std <= 12 &&
+      Math.abs(sr / n - bgMean[0]) <= 4 &&
+      Math.abs(sg / n - bgMean[1]) <= 4 &&
+      Math.abs(sb / n - bgMean[2]) <= 4
+    ) {
+      for (const p of px) bg[p] = 1;
+    }
   }
   // The art's anti-aliased rim is 2-3px wide, so feather TWO rings around the
   // removed backdrop (full strength, then half) — one ring leaves a pale
@@ -216,18 +265,22 @@ async function makeMemberScene(srcPath, outFile) {
   );
 }
 
+// [id, casual art, face box, action-variant art (roster hover) or null]
+// Chibi proportions: heads fill the top half, so face boxes sit high and wide
 const MEMBERS = [
-  // Dia's crop sits right of center so her waving hand stays out of the circle
-  ["dia", "Dia-Whitebox-Slim-Braid-clean.png", { cx: 0.515, cy: 0.19, side: 0.38 }],
-  ["grai", "Grai_TS_GreenOutfit_Texture-clean.png", { cx: 0.5, cy: 0.2, side: 0.4 }],
-  ["kyle", "Koala_WB_Orange-clean.png", { cx: 0.5, cy: 0.2, side: 0.4 }],
+  ["dia", "Dia_Chibi_Cat-clean.png", { cx: 0.5, cy: 0.26, side: 0.5 }, "Dia_Chibi_Cat_Tach-clean.png"],
+  ["grai", "Grai_Chibi-clean.png", { cx: 0.48, cy: 0.26, side: 0.5 }, "Grai_Chibi_Hack-clean.png"],
+  ["kyle", "Koala_Chibi_Koala-clean.png", { cx: 0.49, cy: 0.26, side: 0.5 }, "Koala_Chibi_Koala_Climb-clean.png"],
 ];
-for (const [id, file, faceBox] of MEMBERS) {
+for (const [id, file, faceBox, altFile] of MEMBERS) {
   const memberOut = `${ASSETS}/member-${id}.png`;
   await makeMemberScene(path.join(CLEAN, file), memberOut);
   // face crop for the small circular avatars — cut from the STAGED art so
   // the home-page circles carry the same navy backdrop as the roster cards
   await cropSquare(memberOut, `${ASSETS}/avatar-${id}.png`, faceBox, 640);
+  if (altFile) {
+    await makeMemberScene(path.join(CLEAN, altFile), `${ASSETS}/member-${id}-alt.png`);
+  }
 }
 
 // square crest for header logo + favicons
@@ -293,6 +346,33 @@ async function makeWordmark(srcPath, outFile) {
     out[o + 2] = data[i + 2];
     out[o + 3] = bg[p] ? 0 : ch === 4 ? data[i + 3] : 255;
   }
+  // Stray decorations floating in open background (the WDG art has a small
+  // sparkle near a corner) survive the knockout and drag the trim box with
+  // them — drop every opaque island under 2% the size of the largest one.
+  const comp = new Int32Array(w * h).fill(-1);
+  const areas = [];
+  for (let p0 = 0; p0 < w * h; p0++) {
+    if (out[p0 * 4 + 3] === 0 || comp[p0] !== -1) continue;
+    const id = areas.length;
+    const px = [p0];
+    comp[p0] = id;
+    for (let k = 0; k < px.length; k++) {
+      const p = px[k];
+      const x = p % w;
+      const y = (p - x) / w;
+      for (const q of [x > 0 && p - 1, x < w - 1 && p + 1, y > 0 && p - w, y < h - 1 && p + w]) {
+        if (q !== false && out[q * 4 + 3] !== 0 && comp[q] === -1) {
+          comp[q] = id;
+          px.push(q);
+        }
+      }
+    }
+    areas.push(px.length);
+  }
+  const keepMin = Math.max(...areas) * 0.02;
+  for (let p = 0; p < w * h; p++) {
+    if (comp[p] !== -1 && areas[comp[p]] < keepMin) out[p * 4 + 3] = 0;
+  }
   await sharp(out, { raw: { width: w, height: h, channels: 4 } })
     .trim()
     .png()
@@ -300,7 +380,7 @@ async function makeWordmark(srcPath, outFile) {
   console.log(`built   ${outFile} (background knocked out)`);
 }
 await makeWordmark(
-  path.join(CLEAN, "TheYolksters_Logo_TextOnly_SunnySideUp_LargerEgg-clean.png"),
+  path.join(CLEAN, "TheYolksters_Logo_TextOnly_WDG-clean.png"),
   `${ASSETS}/wordmark.png`,
 );
 
