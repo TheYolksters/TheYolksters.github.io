@@ -8,7 +8,9 @@ import { getLatestVideos, type YouTubeVideo } from "@/lib/youtube";
 
 const parents = embedParents(Astro.site);
 
-const streamers = site.members.filter((m) => m.twitch);
+// Each member's own channel first, then the ones they share (e.g. DiaAndGrai).
+const channels = [...site.members, ...site.sharedStreams];
+const streamers = channels.filter((c) => c.twitch);
 const upcoming = site.members.filter((m) => !m.twitch);
 
 // Build-time YouTube pull. Runs in parallel; members without a channel ID

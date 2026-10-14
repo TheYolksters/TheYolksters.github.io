@@ -38,6 +38,15 @@ export interface Member {
   youtubeChannelId: string;
 }
 
+/** A Twitch channel two or more members stream on together. */
+export interface SharedStream {
+  name: string;
+  /** shown under the name on Watch, in the same spot as a member's role */
+  role: string;
+  /** Twitch channel name ONLY — same rules as Member.twitch above */
+  twitch: string;
+}
+
 /**
  * Main navigation — the ONLY place nav links are defined.
  * Both the desktop bar and the mobile sheet menu read from this.
@@ -97,4 +106,13 @@ export const site = {
       youtubeChannelId: "",
     },
   ] as Member[],
+
+  /** Channels members run together — each gets its own player on Watch. */
+  sharedStreams: [
+    {
+      name: "DiaAndGrai",
+      role: "The Double Yolk",
+      twitch: "diaandgrai",
+    },
+  ] as SharedStream[],
 };
