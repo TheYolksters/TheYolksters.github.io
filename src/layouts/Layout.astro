@@ -7,9 +7,11 @@ import { site } from "@/config/site";
 interface Props {
   title?: string;
   description?: string;
+  /** ask search engines to skip this page (unlinked tools like /creator) */
+  noindex?: boolean;
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, noindex = false } = Astro.props;
 const pageTitle = title
   ? `${title} · ${site.name}`
   : `${site.name} ${site.tag} — ${site.tagline}`;
@@ -27,6 +29,7 @@ const ogImage = new URL("/og.jpg", Astro.site);
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

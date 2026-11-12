@@ -19,6 +19,7 @@ A family-friendly esports team site for **The Yolksters**, deployed on a free Ne
 | **News** | Markdown-based posts (announcements, recaps) via Astro content collections |
 | **Footer (all pages)** | Socials/contact links: Discord, X/Twitter, TikTok, YouTube, Twitch, etc. |
 | **`/theme` (unlinked)** | Brand/theme preview playground — see §4 |
+| **`/creator` (unlinked)** | Yolkster Creator — pose and dress the chibi characters, then hand off to an image AI. See §10 |
 
 **Deferred (not in v1):** real-time LIVE badges via Twitch API (see §3), match schedule/results, merch/sponsors, CMS for non-technical editing.
 
@@ -195,3 +196,24 @@ Each phase ends deployed and working — the site is useful after Phase 1 even i
 - Which game(s) does the team compete in? Worth naming on Home/About for SEO.
 - Should the news section support multiple authors (one md field) or keep it simple?
 - Any interest later in a match schedule page? (Deliberately out of v1.)
+
+---
+
+## 10. Yolkster Creator (`/creator`) — added November 2026
+
+A team tool for making new character art without redrawing by hand. Decisions taken:
+
+- **Unlinked page on the site**, same pattern as `/theme`, marked `noindex`. All three of us can use it from any browser; nothing depends on a local setup.
+- **The doll is a pose guide, not the art.** A simple posable chick (SVG) is exported as a grey mannequin. The image AI gets three things: the real `-clean` character art (identity and style), the mannequin (pose only) and a prompt written by the tool (outfit, expression, background). Cutting up the real art into a puppet was rejected: the existing pictures have hands in pockets and limbs hidden behind the body.
+- **Copy-and-paste first.** The default route is pasting into the Gemini app or ChatGPT, so it costs nothing beyond what we already use and needs no keys.
+- **API keys later, bring-your-own.** Adapters for Gemini (Nano Banana 2.1 / Pro) and OpenAI (GPT Image 2.5 / 2.6) are in place behind an optional section. Keys live in the user's browser only: the site stays fully static (§2), no serverless function, no secrets in Netlify. Not yet run against a live key.
+- **Finish step in the browser.** The AI's picture can be turned into a transparent cutout (same border flood-fill idea as `scripts/prep-images.mjs`) or a square white `-clean` file ready for `Images/`.
+- **Everything editable is data** in `src/config/creator.ts`: poses, wardrobe, outfit presets, scenes.
+
+Second pass, same month, after the first real use:
+
+- **Options live on the doll.** Resting on a dot shows its quick options, a right-click (press and hold on a phone) shows all of them, and the selected dot has a 3D-program style gizmo: a red and a green arrow that slide it along one axis, a blue ring that turns it (wrist, foot, whole body, held item), plus a turntable and a size handle for the body. The tabs still hold everything; the doll is the shortcut.
+- **Hands are whole hands.** Three fingers and a thumb like the art's wing-hands, eleven shapes, a wrist that bends, and a choice of palm or back. The prompt always describes the hand, so the AI draws a hand and not a stub.
+- **Faces come apart.** Sixteen ready-made faces, each one a set of pieces (eyes, eyebrows, beak, blush, gaze, cartoon marks) that can be changed one at a time.
+- **Colours are pinned.** Gemini drifted brighter and more saturated over repeated edits, so each character's colours were measured from the art and the prompt quotes the codes with an instruction not to brighten or saturate. Changed clothes carry their own code. Uploaded characters get their main colours measured in the browser. The advice in the tool is to restart from the original art after two or three replies.
+- **The held item and the companion are things on the stage**: both can be dragged, both can be removed from the doll itself. The item's box is labelled with its name.

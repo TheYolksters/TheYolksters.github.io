@@ -1,0 +1,79 @@
+---
+/**
+ * /creator — the Yolkster Creator (unlinked, like /theme).
+ *
+ * Pose a doll, pick an outfit, and get a ready-to-paste pack for an image
+ * AI: the real character art, a pose guide and a prompt.
+ *
+ * Everything below the frontmatter runs in the browser. This file only
+ * prepares web-sized copies of the character art at build time.
+ */
+import { getImage } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import YolksterCreator from "@/components/creator/YolksterCreator.tsx";
+import type { PersonArt } from "@/components/creator/panels/WhoPanel";
+import { CHARACTERS } from "@/config/creator";
+import { site } from "@/config/site";
+
+// The "-clean" art on white is what the AI should see (the navy-staged copies
+// in src/assets are for the site only). Same files prep-images.mjs reads.
+import diaCasual from "../../Images/Dia_Chibi_Cat-clean.png";
+import diaAction from "../../Images/Dia_Chibi_Cat_Tach-clean.png";
+import graiCasual from "../../Images/Grai_Chibi-clean.png";
+import graiAction from "../../Images/Grai_Chibi_Hack-clean.png";
+import kyleCasual from "../../Images/Koala_Chibi_Koala-clean.png";
+import kyleAction from "../../Images/Koala_Chibi_Koala_Climb-clean.png";
+
+const ART = {
+  dia: { casual: diaCasual, action: diaAction },
+  grai: { casual: graiCasual, action: graiAction },
+  kyle: { casual: kyleCasual, action: kyleAction },
+} as const;
+
+const people: PersonArt[] = await Promise.all(
+  site.members.map(async (m) => ({
+    id: m.id,
+    name: m.name,
+    role: m.role,
+    art: await Promise.all(
+      CHARACTERS[m.id].art.map(async (a) => {
+        // NOTE: hand `src` straight to getImage and don't read its fields
+        // (src.width etc.). Astro treats any direct read as "this page uses
+        // the original file" and would then ship all six multi-megabyte
+        // PNGs in the build. Images are never enlarged, so 1536 is a cap.
+        const src = ART[m.id][a.key];
+        // thumb: what the page shows · full: what gets copied for the AI
+        const thumb = await getImage({ src, width: 320, format: "webp", quality: 80 });
+        const full = await getImage({ src, width: 1536, format: "webp", quality: 92 });
+        return { key: a.key, label: a.label, thumb: thumb.src, full: full.src };
+      }),
+    ),
+  })),
+);
+---
+
+<Layout
+  title="Yolkster Creator"
+  description="Pose a Yolkster, pick an outfit and get a ready-to-paste pack for an image AI."
+  noindex
+>
+  <section class="mx-auto max-w-6xl px-4 py-10 md:py-12">
+    <h1 class="text-4xl font-extrabold md:text-5xl">
+      Yolkster <span class="text-yolk">Creator</span>
+    </h1>
+    <p class="mt-3 max-w-prose text-lg text-dust">
+      Pose the doll, pick an outfit, then hand it to an image AI. You get three
+      things to paste: the real character art, a pose guide and a prompt.
+    </p>
+
+    <div class="mt-8">
+      <YolksterCreator client:only="react" people={people}>
+        <p slot="fallback" class="text-sm text-dust">Warming up the coop…</p>
+      </YolksterCreator>
+    </div>
+
+    <noscript>
+      <p class="mt-6 text-sm text-dust">The Creator needs JavaScript switched on.</p>
+    </noscript>
+  </section>
+</Layout>
